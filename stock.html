@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Склад | Кучтэнэч</title>
+    <meta name="description" content="Управление складскими операциями и остатками">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="stock-styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🥐</div>
+                <div class="logo-text">
+                    <span class="logo-title">К учтэнэч</span>
+                    <span class="logo-subtitle">Аналитика</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="pos.html" class="nav-item"
+                    style="background: linear-gradient(135deg, #e94560, #ff6b6b); color: white; border: none;">
+                    <span class="nav-icon">🖥️</span>
+                    <span>КАССА</span>
+                </a>
+                <a href="index.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Дашборд</span>
+                </a>
+                <a href="sales.html" class="nav-item">
+                    <span class="nav-icon">💰</span>
+                    <span>Продажи</span>
+                </a>
+                <a href="add-sale.html" class="nav-item">
+                    <span class="nav-icon">➕</span>
+                    <span>Новая продажа</span>
+                </a>
+                <a href="products.html" class="nav-item">
+                    <span class="nav-icon">🥧</span>
+                    <span>Ассортимент</span>
+                </a>
+                <a href="reports.html" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>Отчёты</span>
+                </a>
+
+                <div class="nav-divider"></div>
+                <div class="nav-section-title">Учёт</div>
+
+                <a href="ingredients.html" class="nav-item">
+                    <span class="nav-icon">📦</span>
+                    <span>Ингредиенты</span>
+                </a>
+                <a href="recipes.html" class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span>Рецепты</span>
+                </a>
+                <a href="stock.html" class="nav-item active">
+                    <span class="nav-icon">🏪</span>
+                    <span>Склад</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">АК</div>
+                    <div class="user-details">
+                        <span class="user-name">Айгуль Каримова</span>
+                        <span class="user-role">Владелец</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="page-title">🏪 Склад</h1>
+                </div>
+                <div class="header-right">
+                    <button class="btn btn-primary" onclick="showNewOperationModal()">
+                        ➕ Новая операция
+                    </button>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <!-- Tabs -->
+                <div class="stock-tabs">
+                    <button class="stock-tab-btn active" data-tab="balances" onclick="switchTab('balances')">
+                        📊 Остатки
+                    </button>
+                    <button class="stock-tab-btn" data-tab="operations" onclick="switchTab('operations')">
+                        📝 Операции
+                    </button>
+                    <button class="stock-tab-btn" data-tab="analytics" onclick="switchTab('analytics')">
+                        📈 Аналитика
+                    </button>
+                </div>
+
+                <!-- Tab: Balances -->
+                <div class="stock-tab-content active" id="balances-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Текущие остатки</h3>
+                            <div class="search-box" style="min-width: 250px;">
+                                <input type="text" id="balancesSearch" placeholder="🔍 Поиск..."
+                                    oninput="handleBalancesSearch()">
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Статус</th>
+                                        <th>Ингредиент</th>
+                                        <th>Остаток</th>
+                                        <th>Мин. остаток</th>
+                                        <th>% от мин.</th>
+                                        <th>Стоимость</th>
+                                        <th>Прогноз</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="balancesTableBody">
+                                    <!-- Заполняется через JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Operations -->
+                <div class="stock-tab-content" id="operations-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>История операций</h3>
+                            <div class="filters" style="display: flex; gap: 12px;">
+                                <select id="operationTypeFilter" onchange="handleOperationFilters()">
+                                    <option value="all">Все типы</option>
+                                    <option value="purchase">Закупка</option>
+                                    <option value="sale">Продажа</option>
+                                    <option value="writeoff">Списание</option>
+                                    <option value="inventory">Инвентаризация</option>
+                                </select>
+                                <select id="operationPeriodFilter" onchange="handleOperationFilters()">
+                                    <option value="today">Сегодня</option>
+                                    <option value="week">Неделя</option>
+                                    <option value="month">Месяц</option>
+                                    <option value="all">Весь период</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Дата/Время</th>
+                                        <th>Тип</th>
+                                        <th>Ингредиент</th>
+                                        <th>Количество</th>
+                                        <th>Причина</th>
+                                        <th>Примечания</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="operationsTableBody">
+                                    <!-- Заполняется через JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Analytics -->
+                <div class="stock-tab-content" id="analytics-tab">
+                    <div class="analytics-grid">
+                        <!-- Top Used Ingredients -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>⭐ Топ расходуемых ингредиентов</h3>
+                            </div>
+                            <div class="top-ingredients-list" id="topIngredientsList">
+                                <!-- Заполняется через JS -->
+                            </div>
+                        </div>
+
+                        <!-- Low Stock Alerts -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>⚠️ Требуется закупка</h3>
+                            </div>
+                            <div class="low-stock-list" id="lowStockList">
+                                <!-- Заполняется через JS -->
+                            </div>
+                        </div>
+
+                        <!-- Operations Stats -->
+                        <div class="card full-width">
+                            <div class="card-header">
+                                <h3>📊 Статистика операций (месяц)</h3>
+                            </div>
+                            <div class="operations-stats" id="operationsStats">
+                                <!-- Заполняется через JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: New Operation -->
+    <div id="newOperationModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>➕ Новая операция</h2>
+                <button class="modal-close" onclick="closeNewOperationModal()">✕</button>
+            </div>
+            <form id="newOperationForm" onsubmit="handleNewOperation(event)">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="operationType">Тип операции *</label>
+                        <select id="operationType" required onchange="handleOperationTypeChange()">
+                            <option value="">Выберите тип...</option>
+                            <option value="purchase">Закупка (поступление)</option>
+                            <option value="writeoff">Списание (брак/усушка)</option>
+                            <option value="inventory">Инвентаризация (корректировка)</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="operationIngredient">Ингредиент *</label>
+                        <select id="operationIngredient" required onchange="handleIngredientSelect()">
+                            <option value="">Выберите ингредиент...</option>
+                            <!-- Заполняется через JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="operationQuantity">Количество *</label>
+                        <input type="number" id="operationQuantity" step="0.01" min="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Единица измерения</label>
+                        <input type="text" id="operationUnit" readonly>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="operationReason">Причина *</label>
+                        <input type="text" id="operationReason" required placeholder="Например: Плановая закупка">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="operationNotes">Примечания</label>
+                        <textarea id="operationNotes" rows="2" placeholder="Дополнительная информация"></textarea>
+                    </div>
+                    <div class="form-group full-width operation-preview" id="operationPreview">
+                        <!-- Динамическое отображение изменения -->
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeNewOperationModal()">
+                        Отмена
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Выполнить операцию
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="ingredients.js"></script>
+    <script src="recipes.js"></script>
+    <script src="stock-operations.js"></script>
+    <script src="stock-page.js"></script>
+</body>
+
+</html>

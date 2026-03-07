@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кучтэнэч | Отчёты</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🥐</div>
+                <div class="logo-text">
+                    <span class="logo-title">Кучтэнэч</span>
+                    <span class="logo-subtitle">Аналитика</span>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item"><span class="nav-icon">📊</span><span>Дашборд</span></a>
+                <a href="sales.html" class="nav-item"><span class="nav-icon">💰</span><span>Продажи</span></a>
+                <a href="add-sale.html" class="nav-item"><span class="nav-icon">➕</span><span>Новая продажа</span></a>
+                <a href="products.html" class="nav-item"><span class="nav-icon">🥧</span><span>Ассортимент</span></a>
+                <a href="reports.html" class="nav-item active"><span class="nav-icon">📄</span><span>Отчёты</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">АК</div>
+                    <div class="user-details">
+                        <span class="user-name">Айгуль Каримова</span>
+                        <span class="user-role">Владелец</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="page-title">Отчёты</h1>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Выбор типа отчёта -->
+                <div class="reports-grid">
+                    <div class="report-card" data-report="daily">
+                        <div class="report-icon">📅</div>
+                        <h3>Дневной отчёт</h3>
+                        <p>Сводка продаж за выбранный день</p>
+                        <span class="report-format">Excel / PDF</span>
+                    </div>
+
+                    <div class="report-card" data-report="weekly">
+                        <div class="report-icon">📊</div>
+                        <h3>Недельный отчёт</h3>
+                        <p>Анализ продаж за неделю с графиками</p>
+                        <span class="report-format">Excel / PDF</span>
+                    </div>
+
+                    <div class="report-card" data-report="monthly">
+                        <div class="report-icon">📈</div>
+                        <h3>Месячный отчёт</h3>
+                        <p>Полный отчёт за месяц с аналитикой</p>
+                        <span class="report-format">Excel / PDF</span>
+                    </div>
+
+                    <div class="report-card" data-report="products">
+                        <div class="report-icon">🥧</div>
+                        <h3>Отчёт по товарам</h3>
+                        <p>ABC-анализ и рентабельность</p>
+                        <span class="report-format">Excel</span>
+                    </div>
+
+                    <div class="report-card" data-report="waste">
+                        <div class="report-icon">📉</div>
+                        <h3>Отчёт по списаниям</h3>
+                        <p>Анализ потерь и рекомендации</p>
+                        <span class="report-format">Excel / PDF</span>
+                    </div>
+
+                    <div class="report-card" data-report="custom">
+                        <div class="report-icon">⚙️</div>
+                        <h3>Произвольный отчёт</h3>
+                        <p>Выберите параметры самостоятельно</p>
+                        <span class="report-format">Excel / CSV</span>
+                    </div>
+                </div>
+
+                <!-- Форма генерации отчёта -->
+                <div id="reportForm" class="report-form hidden">
+                    <div class="form-section">
+                        <h3 id="reportFormTitle">Сформировать отчёт</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reportDateFrom">Период с</label>
+                                <input type="date" id="reportDateFrom">
+                            </div>
+                            <div class="form-group">
+                                <label for="reportDateTo">по</label>
+                                <input type="date" id="reportDateTo">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Формат выгрузки</label>
+                            <div class="format-options">
+                                <label class="format-option">
+                                    <input type="radio" name="exportFormat" value="excel" checked>
+                                    <span class="format-card">
+                                        <span class="format-icon">📗</span>
+                                        <span>Excel (.xlsx)</span>
+                                    </span>
+                                </label>
+                                <label class="format-option">
+                                    <input type="radio" name="exportFormat" value="pdf">
+                                    <span class="format-card">
+                                        <span class="format-icon">📕</span>
+                                        <span>PDF</span>
+                                    </span>
+                                </label>
+                                <label class="format-option">
+                                    <input type="radio" name="exportFormat" value="csv">
+                                    <span class="format-card">
+                                        <span class="format-icon">📄</span>
+                                        <span>CSV</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Включить в отчёт</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-option">
+                                    <input type="checkbox" checked> Сводка по выручке
+                                </label>
+                                <label class="checkbox-option">
+                                    <input type="checkbox" checked> Детализация по товарам
+                                </label>
+                                <label class="checkbox-option">
+                                    <input type="checkbox" checked> Графики
+                                </label>
+                                <label class="checkbox-option">
+                                    <input type="checkbox"> Список всех чеков
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-ghost" onclick="hideReportForm()">Отмена</button>
+                            <button type="button" class="btn btn-primary" id="generateReportBtn">
+                                📥 Сформировать и скачать
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Последние отчёты -->
+                <div class="recent-reports">
+                    <h3>📁 Последние отчёты</h3>
+                    <div class="reports-list">
+                        <div class="report-item">
+                            <span class="report-item-icon">📗</span>
+                            <div class="report-item-info">
+                                <span class="report-item-name">Месячный отчёт — Декабрь 2025</span>
+                                <span class="report-item-date">Создан: 01.01.2026</span>
+                            </div>
+                            <button class="btn btn-sm">Скачать</button>
+                        </div>
+                        <div class="report-item">
+                            <span class="report-item-icon">📕</span>
+                            <div class="report-item-info">
+                                <span class="report-item-name">Недельный отчёт — 13-19 января</span>
+                                <span class="report-item-date">Создан: 19.01.2026</span>
+                            </div>
+                            <button class="btn btn-sm">Скачать</button>
+                        </div>
+                        <div class="report-item">
+                            <span class="report-item-icon">📗</span>
+                            <div class="report-item-info">
+                                <span class="report-item-name">Отчёт по товарам — Январь</span>
+                                <span class="report-item-date">Создан: 15.01.2026</span>
+                            </div>
+                            <button class="btn btn-sm">Скачать</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        initReportsPage();
+    </script>
+</body>
+
+</html>

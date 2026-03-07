@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кучтэнэч | Новая продажа</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🥐</div>
+                <div class="logo-text">
+                    <span class="logo-title">Кучтэнэч</span>
+                    <span class="logo-subtitle">Аналитика</span>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item"><span class="nav-icon">📊</span><span>Дашборд</span></a>
+                <a href="sales.html" class="nav-item"><span class="nav-icon">💰</span><span>Продажи</span></a>
+                <a href="add-sale.html" class="nav-item active"><span class="nav-icon">➕</span><span>Новая
+                        продажа</span></a>
+                <a href="products.html" class="nav-item"><span class="nav-icon">🥧</span><span>Ассортимент</span></a>
+                <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span>Отчёты</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">АК</div>
+                    <div class="user-details">
+                        <span class="user-name">Айгуль Каримова</span>
+                        <span class="user-role">Владелец</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="page-title">Новая продажа</h1>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <div class="sale-form-container">
+                    <form id="saleForm" class="sale-form">
+                        <!-- Дата и время -->
+                        <div class="form-section">
+                            <h3>📅 Дата и время</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="saleDate">Дата</label>
+                                    <input type="date" id="saleDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="saleTime">Время</label>
+                                    <input type="time" id="saleTime" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Товары -->
+                        <div class="form-section">
+                            <h3>🥧 Товары</h3>
+                            <div id="cartItems" class="cart-items"></div>
+
+                            <div class="product-selector">
+                                <div class="form-row">
+                                    <div class="form-group flex-2">
+                                        <label for="productSelect">Выберите товар</label>
+                                        <select id="productSelect">
+                                            <option value="">-- Выберите товар --</option>
+                                            <optgroup label="🥟 Национальное">
+                                                <option value="echpochmak" data-price="65">Эчпочмак — 65 ₽</option>
+                                                <option value="elesh" data-price="120">Элеш с курицей — 120 ₽</option>
+                                                <option value="gubadia" data-price="890">Губадия (1 кг) — 890 ₽</option>
+                                                <option value="kystyby" data-price="45">Кыстыбый — 45 ₽</option>
+                                                <option value="chak-chak" data-price="350">Чак-чак — 350 ₽</option>
+                                            </optgroup>
+                                            <optgroup label="🍞 Хлеб">
+                                                <option value="bread-white" data-price="55">Хлеб белый — 55 ₽</option>
+                                                <option value="bread-rye" data-price="65">Хлеб ржаной — 65 ₽</option>
+                                                <option value="baguette" data-price="75">Багет — 75 ₽</option>
+                                            </optgroup>
+                                            <optgroup label="🥐 Выпечка">
+                                                <option value="croissant" data-price="95">Круассан — 95 ₽</option>
+                                                <option value="muffin" data-price="85">Маффин — 85 ₽</option>
+                                                <option value="pirog" data-price="120">Пирог с яблоком — 120 ₽</option>
+                                            </optgroup>
+                                            <optgroup label="☕ Напитки">
+                                                <option value="coffee" data-price="120">Кофе американо — 120 ₽</option>
+                                                <option value="latte" data-price="180">Латте — 180 ₽</option>
+                                                <option value="tea" data-price="60">Чай — 60 ₽</option>
+                                            </optgroup>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="productQty">Кол-во</label>
+                                        <input type="number" id="productQty" value="1" min="1" max="99">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <button type="button" id="addProductBtn"
+                                            class="btn btn-secondary">Добавить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Итого и оплата -->
+                        <div class="form-section">
+                            <h3>💳 Оплата</h3>
+                            <div class="payment-summary">
+                                <div class="summary-row">
+                                    <span>Товаров:</span>
+                                    <span id="totalItems">0 шт</span>
+                                </div>
+                                <div class="summary-row total">
+                                    <span>Итого:</span>
+                                    <span id="totalAmount">0 ₽</span>
+                                </div>
+                            </div>
+
+                            <div class="payment-methods">
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="card" checked>
+                                    <span class="payment-card">💳 Карта</span>
+                                </label>
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="cash">
+                                    <span class="payment-card">💵 Наличные</span>
+                                </label>
+                                <label class="payment-option">
+                                    <input type="radio" name="paymentMethod" value="sbp">
+                                    <span class="payment-card">📱 СБП</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Кнопки -->
+                        <div class="form-actions">
+                            <button type="button" id="clearFormBtn" class="btn btn-ghost">Очистить</button>
+                            <button type="submit" class="btn btn-primary btn-large">
+                                ✓ Провести продажу
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Успешное сообщение -->
+                <div id="successModal" class="modal hidden">
+                    <div class="modal-content success-modal">
+                        <div class="success-icon">✅</div>
+                        <h2>Продажа добавлена!</h2>
+                        <p id="successDetails"></p>
+                        <div class="modal-actions">
+                            <button class="btn btn-secondary" onclick="closeModal()">Закрыть</button>
+                            <button class="btn btn-primary" onclick="newSale()">Новая продажа</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        initAddSale();
+    </script>
+</body>
+
+</html>

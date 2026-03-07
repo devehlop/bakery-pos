@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кучтэнэч | Продажи</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🥐</div>
+                <div class="logo-text">
+                    <span class="logo-title">Кучтэнэч</span>
+                    <span class="logo-subtitle">Аналитика</span>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-item"><span class="nav-icon">📊</span><span>Дашборд</span></a>
+                <a href="sales.html" class="nav-item active"><span class="nav-icon">💰</span><span>Продажи</span></a>
+                <a href="add-sale.html" class="nav-item"><span class="nav-icon">➕</span><span>Новая продажа</span></a>
+                <a href="products.html" class="nav-item"><span class="nav-icon">🥧</span><span>Ассортимент</span></a>
+                <a href="reports.html" class="nav-item"><span class="nav-icon">📄</span><span>Отчёты</span></a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">АК</div>
+                    <div class="user-details">
+                        <span class="user-name">Айгуль Каримова</span>
+                        <span class="user-role">Владелец</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="page-title">Продажи</h1>
+                    <span class="page-date" id="currentDate"></span>
+                </div>
+                <div class="header-right">
+                    <a href="add-sale.html" class="btn btn-primary">➕ Новая продажа</a>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Фильтры -->
+                <div class="filters-bar">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" placeholder="Поиск по чеку..." id="salesSearch">
+                    </div>
+                    <div class="filter-group">
+                        <select id="dateFilter">
+                            <option value="today">Сегодня</option>
+                            <option value="yesterday">Вчера</option>
+                            <option value="week">Эта неделя</option>
+                            <option value="month" selected>Этот месяц</option>
+                        </select>
+                        <select id="paymentFilter">
+                            <option value="all">Все способы оплаты</option>
+                            <option value="card">💳 Карта</option>
+                            <option value="cash">💵 Наличные</option>
+                            <option value="sbp">📱 СБП</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Сводка -->
+                <div class="sales-summary">
+                    <div class="summary-card">
+                        <span class="summary-label">Всего продаж</span>
+                        <span class="summary-value" id="totalSalesCount">347</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">Общая выручка</span>
+                        <span class="summary-value" id="totalSalesRevenue">156 420 ₽</span>
+                    </div>
+                    <div class="summary-card">
+                        <span class="summary-label">Средний чек</span>
+                        <span class="summary-value" id="avgCheck">451 ₽</span>
+                    </div>
+                </div>
+
+                <!-- Таблица продаж -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>№ Чека</th>
+                                <th>Дата/Время</th>
+                                <th>Позиции</th>
+                                <th>Сумма</th>
+                                <th>Оплата</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesTableBody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Пагинация -->
+                <div class="pagination">
+                    <button class="pagination-btn" disabled>← Назад</button>
+                    <span class="pagination-info">Страница 1 из 12</span>
+                    <button class="pagination-btn">Вперёд →</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        initSalesPage();
+    </script>
+</body>
+
+</html>

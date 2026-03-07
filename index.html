@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кучтэнэч | Дашборд</title>
+    <meta name="description" content="Панель аналитики для пекарни Кучтэнэч">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <div class="logo-icon">🥐</div>
+                <div class="logo-text">
+                    <span class="logo-title">Кучтэнэч</span>
+                    <span class="logo-subtitle">Аналитика</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="pos.html" class="nav-item"
+                    style="background: linear-gradient(135deg, #e94560, #ff6b6b); color: white; border: none;">
+                    <span class="nav-icon">🖥️</span>
+                    <span>КАССА</span>
+                </a>
+                <a href="index.html" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span>Дашборд</span>
+                </a>
+                <a href="sales.html" class="nav-item">
+                    <span class="nav-icon">💰</span>
+                    <span>Продажи</span>
+                </a>
+                <a href="add-sale.html" class="nav-item">
+                    <span class="nav-icon">➕</span>
+                    <span>Новая продажа</span>
+                </a>
+                <a href="products.html" class="nav-item">
+                    <span class="nav-icon">🥧</span>
+                    <span>Ассортимент</span>
+                </a>
+                <a href="reports.html" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>Отчёты</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">АК</div>
+                    <div class="user-details">
+                        <span class="user-name">Айгуль Каримова</span>
+                        <span class="user-role">Владелец</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+
+            <header class="header">
+                <div class="header-left">
+                    <h1 class="page-title">Дашборд</h1>
+                    <span class="page-date" id="currentDate"></span>
+                </div>
+                <div class="header-right">
+                    <div class="date-filter">
+                        <button class="filter-btn active" data-period="today">Сегодня</button>
+                        <button class="filter-btn" data-period="week">Неделя</button>
+                        <button class="filter-btn" data-period="month">Месяц</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <!-- KPI Cards -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon revenue">💵</div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">Выручка</span>
+                            <span class="kpi-value" id="revenueValue">47 850 ₽</span>
+                            <span class="kpi-change positive">+12.5% к вчера</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon orders">🧾</div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">Заказов</span>
+                            <span class="kpi-value" id="ordersValue">156</span>
+                            <span class="kpi-change positive">+8 к вчера</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon avg-check">🎯</div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">Средний чек</span>
+                            <span class="kpi-value" id="avgCheckValue">307 ₽</span>
+                            <span class="kpi-change positive">+15 ₽</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon waste">📦</div>
+                        <div class="kpi-info">
+                            <span class="kpi-label">Списания</span>
+                            <span class="kpi-value" id="wasteValue">3.2%</span>
+                            <span class="kpi-change negative">+0.5%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row (Compact) -->
+                <div class="charts-row compact">
+                    <div class="chart-card mini-stats" id="salesChartCard">
+                        <div class="chart-header">
+                            <h3>📈 Динамика продаж</h3>
+                            <button class="btn btn-sm btn-secondary" id="loadChartBtn"
+                                onclick="loadSalesChart()">Показать график</button>
+                        </div>
+                        <div class="mini-stats-row" id="miniStatsRow">
+                            <div class="mini-stat">
+                                <span class="mini-stat-label">За неделю</span>
+                                <span class="mini-stat-value" id="weekRevenue">—</span>
+                            </div>
+                            <div class="mini-stat">
+                                <span class="mini-stat-label">Лучший день</span>
+                                <span class="mini-stat-value" id="bestDay">—</span>
+                            </div>
+                            <div class="mini-stat">
+                                <span class="mini-stat-label">Тренд</span>
+                                <span class="mini-stat-value trend-up" id="weekTrend">—</span>
+                            </div>
+                        </div>
+                        <div id="chartContainer" class="chart-container hidden">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>По категориям</h3>
+                        </div>
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Bottom Row -->
+                <div class="bottom-row">
+                    <div class="info-card">
+                        <div class="card-header">
+                            <h3>🔥 Хиты продаж</h3>
+                            <span class="card-badge">Топ-5</span>
+                        </div>
+                        <div class="products-list" id="topProducts"></div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Продажи по часам</h3>
+                            <span class="peak-time">Пик: 12:00-14:00</span>
+                        </div>
+                        <canvas id="hourlyChart"></canvas>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="card-header">
+                            <h3>📋 Последние заказы</h3>
+                            <a href="sales.html" class="view-all">Все →</a>
+                        </div>
+                        <div class="activity-list" id="recentOrders"></div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <a href="pos.html" class="action-btn primary"
+                        style="background: linear-gradient(135deg, #e94560, #ff6b6b);">
+                        <span>🖥️</span> Открыть кассу
+                    </a>
+                    <a href="add-sale.html" class="action-btn secondary">
+                        <span>➕</span> Добавить продажу
+                    </a>
+                    <a href="reports.html" class="action-btn secondary">
+                        <span>📄</span> Выгрузить отчёт
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        initDashboard();
+    </script>
+</body>
+
+</html>

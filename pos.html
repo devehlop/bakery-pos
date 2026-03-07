@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Кучтэнэч | Касса</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="pos-styles.css">
+</head>
+
+<body>
+    <div class="pos-container">
+        <!-- Левая панель - Товары -->
+        <div class="products-panel">
+            <!-- Шапка -->
+            <div class="pos-header">
+                <div class="pos-logo">
+                    <span class="logo-emoji">🥐</span>
+                    <span class="logo-name">Кучтэнэч</span>
+                </div>
+                <div class="pos-time" id="currentTime">12:00</div>
+                <button class="header-btn" onclick="location.href='index.html'">
+                    <span>📊</span> Аналитика
+                </button>
+            </div>
+
+            <!-- Категории -->
+            <div class="categories-bar">
+                <button class="category-btn active" data-category="national" onclick="selectCategory('national')">
+                    <span class="cat-icon">🥟</span>
+                    <span>Национальное</span>
+                </button>
+                <button class="category-btn" data-category="bread" onclick="selectCategory('bread')">
+                    <span class="cat-icon">🍞</span>
+                    <span>Хлеб</span>
+                </button>
+                <button class="category-btn" data-category="pastry" onclick="selectCategory('pastry')">
+                    <span class="cat-icon">🥐</span>
+                    <span>Выпечка</span>
+                </button>
+                <button class="category-btn" data-category="drinks" onclick="selectCategory('drinks')">
+                    <span class="cat-icon">☕</span>
+                    <span>Напитки</span>
+                </button>
+                <button class="category-btn" data-category="all" onclick="selectCategory('all')">
+                    <span class="cat-icon">📋</span>
+                    <span>Все</span>
+                </button>
+            </div>
+
+            <!-- Сетка товаров -->
+            <div class="products-grid" id="productsGrid">
+                <!-- Заполняется JS -->
+            </div>
+        </div>
+
+        <!-- Правая панель - Заказ -->
+        <div class="order-panel">
+            <div class="order-header">
+                <h2>Заказ #<span id="orderNumber">001</span></h2>
+                <button class="clear-order-btn" onclick="clearOrder()">
+                    <span>🗑️</span> Очистить
+                </button>
+            </div>
+
+            <div class="order-items" id="orderItems">
+                <div class="empty-order">
+                    <span class="empty-icon">🛒</span>
+                    <p>Выберите товары</p>
+                </div>
+            </div>
+
+            <div class="order-summary">
+                <div class="summary-row">
+                    <span>Позиций:</span>
+                    <span id="totalQty">0</span>
+                </div>
+                <div class="summary-row subtotal">
+                    <span>Подытого:</span>
+                    <span id="subtotal">0 ₽</span>
+                </div>
+                <div class="summary-row discount hidden" id="discountRow">
+                    <span>Скидка:</span>
+                    <span id="discountAmount">-0 ₽</span>
+                </div>
+                <div class="summary-total">
+                    <span>ИТОГО:</span>
+                    <span id="totalAmount">0 ₽</span>
+                </div>
+            </div>
+
+            <!-- Быстрые действия -->
+            <div class="quick-actions">
+                <button class="action-btn discount-btn" onclick="applyDiscount()">
+                    <span>🏷️</span>
+                    <span>Скидка</span>
+                </button>
+                <button class="action-btn comment-btn" onclick="addComment()">
+                    <span>💬</span>
+                    <span>Комментарий</span>
+                </button>
+            </div>
+
+            <!-- Кнопки оплаты -->
+            <div class="payment-buttons">
+                <button class="pay-btn card" onclick="processPayment('card')">
+                    <span class="pay-icon">💳</span>
+                    <span class="pay-label">Карта</span>
+                </button>
+                <button class="pay-btn cash" onclick="processPayment('cash')">
+                    <span class="pay-icon">💵</span>
+                    <span class="pay-label">Наличные</span>
+                </button>
+                <button class="pay-btn sbp" onclick="processPayment('sbp')">
+                    <span class="pay-icon">📱</span>
+                    <span class="pay-label">СБП</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно количества -->
+    <div class="modal hidden" id="qtyModal">
+        <div class="modal-content qty-modal">
+            <div class="modal-header">
+                <span class="modal-product-icon" id="modalProductIcon">🥟</span>
+                <h3 id="modalProductName">Эчпочмак</h3>
+                <span class="modal-price" id="modalProductPrice">65 ₽</span>
+            </div>
+            <div class="qty-display">
+                <span id="qtyDisplay">1</span>
+            </div>
+            <div class="numpad">
+                <button class="num-btn" onclick="numpadInput(1)">1</button>
+                <button class="num-btn" onclick="numpadInput(2)">2</button>
+                <button class="num-btn" onclick="numpadInput(3)">3</button>
+                <button class="num-btn" onclick="numpadInput(4)">4</button>
+                <button class="num-btn" onclick="numpadInput(5)">5</button>
+                <button class="num-btn" onclick="numpadInput(6)">6</button>
+                <button class="num-btn" onclick="numpadInput(7)">7</button>
+                <button class="num-btn" onclick="numpadInput(8)">8</button>
+                <button class="num-btn" onclick="numpadInput(9)">9</button>
+                <button class="num-btn clear" onclick="numpadClear()">C</button>
+                <button class="num-btn" onclick="numpadInput(0)">0</button>
+                <button class="num-btn backspace" onclick="numpadBackspace()">⌫</button>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeQtyModal()">Отмена</button>
+                <button class="modal-btn confirm" onclick="confirmQty()">Добавить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно оплаты наличными -->
+    <div class="modal hidden" id="cashModal">
+        <div class="modal-content cash-modal">
+            <h3>💵 Оплата наличными</h3>
+            <div class="cash-total">
+                К оплате: <span id="cashTotal">0 ₽</span>
+            </div>
+            <div class="cash-input-display">
+                <span>Получено:</span>
+                <span class="cash-received" id="cashReceived">0 ₽</span>
+            </div>
+            <div class="quick-cash">
+                <button class="quick-cash-btn" onclick="quickCash(100)">100 ₽</button>
+                <button class="quick-cash-btn" onclick="quickCash(200)">200 ₽</button>
+                <button class="quick-cash-btn" onclick="quickCash(500)">500 ₽</button>
+                <button class="quick-cash-btn" onclick="quickCash(1000)">1000 ₽</button>
+                <button class="quick-cash-btn" onclick="quickCash(2000)">2000 ₽</button>
+                <button class="quick-cash-btn" onclick="quickCash(5000)">5000 ₽</button>
+            </div>
+            <div class="numpad cash-numpad">
+                <button class="num-btn" onclick="cashNumpad(1)">1</button>
+                <button class="num-btn" onclick="cashNumpad(2)">2</button>
+                <button class="num-btn" onclick="cashNumpad(3)">3</button>
+                <button class="num-btn" onclick="cashNumpad(4)">4</button>
+                <button class="num-btn" onclick="cashNumpad(5)">5</button>
+                <button class="num-btn" onclick="cashNumpad(6)">6</button>
+                <button class="num-btn" onclick="cashNumpad(7)">7</button>
+                <button class="num-btn" onclick="cashNumpad(8)">8</button>
+                <button class="num-btn" onclick="cashNumpad(9)">9</button>
+                <button class="num-btn clear" onclick="cashClear()">C</button>
+                <button class="num-btn" onclick="cashNumpad(0)">0</button>
+                <button class="num-btn backspace" onclick="cashBackspace()">⌫</button>
+            </div>
+            <div class="cash-change" id="cashChangeRow">
+                <span>Сдача:</span>
+                <span class="change-amount" id="cashChange">0 ₽</span>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeCashModal()">Отмена</button>
+                <button class="modal-btn confirm" id="confirmCashBtn" onclick="confirmCashPayment()"
+                    disabled>Оплатить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно успешной оплаты -->
+    <div class="modal hidden" id="successModal">
+        <div class="modal-content success-modal">
+            <div class="success-animation">✅</div>
+            <h2>Оплата принята!</h2>
+            <div class="success-details">
+                <p>Чек: <span id="successOrderId">#001</span></p>
+                <p>Сумма: <span id="successAmount">0 ₽</span></p>
+                <p id="successChange" class="hidden">Сдача: <span id="successChangeAmount">0 ₽</span></p>
+            </div>
+            <button class="modal-btn confirm large" onclick="newOrder()">Новый заказ</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно скидки -->
+    <div class="modal hidden" id="discountModal">
+        <div class="modal-content">
+            <h3>🏷️ Применить скидку</h3>
+            <div class="discount-options">
+                <button class="discount-option" onclick="setDiscount(5)">5%</button>
+                <button class="discount-option" onclick="setDiscount(10)">10%</button>
+                <button class="discount-option" onclick="setDiscount(15)">15%</button>
+                <button class="discount-option" onclick="setDiscount(20)">20%</button>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" onclick="closeDiscountModal()">Отмена</button>
+                <button class="modal-btn confirm" onclick="removeDiscount()">Убрать скидку</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="ingredients.js"></script>
+    <script src="recipes.js"></script>
+    <script src="stock-operations.js"></script>
+    <script src="pos.js"></script>
+</body>
+
+</html>
