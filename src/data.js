@@ -227,14 +227,16 @@ function getWeeklySalesData() {
 }
 
 // Экспорт данных
-window.PRODUCTS = PRODUCTS;
-window.CATEGORY_NAMES = CATEGORY_NAMES;
-window.getSales = getSales;
-window.addSale = addSale;
-window.getSalesByPeriod = getSalesByPeriod;
-window.getTopProducts = getTopProducts;
-window.getCategoryStats = getCategoryStats;
-window.getHourlyStats = getHourlyStats;
-window.getWeekdayStats = getWeekdayStats;
-window.getDashboardKPI = getDashboardKPI;
-window.getWeeklySalesData = getWeeklySalesData;
+export {
+    PRODUCTS,
+    CATEGORY_NAMES,
+    getSales,
+    addSale,
+    getSalesByPeriod,
+    getTopProducts,
+    getCategoryStats,
+    getHourlyStats,
+    getWeekdayStats,
+    getDashboardKPI,
+    getWeeklySalesData
+};

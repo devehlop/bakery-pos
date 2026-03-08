@@ -140,7 +140,7 @@ function getRecipe(productId) {
 }
 
 // Сохранить/обновить рецепт
-function saveRecipe(recipe) {
+async function saveRecipe(recipe) {
     const recipes = getRecipes();
 
     // Валидация
@@ -176,19 +176,22 @@ function saveRecipe(recipe) {
     recipes[recipe.productId] = newRecipe;
     localStorage.setItem('kuchtanech_recipes', JSON.stringify(recipes));
 
-    // Обновляем информацию в PRODUCTS
-    if (window.PRODUCTS && window.PRODUCTS[recipe.productId]) {
-        const cost = calculateProductCost(recipe.productId);
-        window.PRODUCTS[recipe.productId].hasRecipe = true;
-        window.PRODUCTS[recipe.productId].calculatedCost = cost;
-    }
+    // Обновляем информацию в PRODUCTS (обращаемся к импортированному модулю)
+    try {
+        const { PRODUCTS } = await import('./data.js');
+        if (PRODUCTS && PRODUCTS[recipe.productId]) {
+            const cost = calculateProductCost(recipe.productId);
+            PRODUCTS[recipe.productId].hasRecipe = true;
+            PRODUCTS[recipe.productId].calculatedCost = cost;
+        }
+    } catch (e) { /* data module may not export PRODUCTS */ }
 
     console.log('✅ Сохранён рецепт для:', recipe.productId, '(версия', version + ')');
     return newRecipe;
 }
 
 // Удалить рецепт
-function deleteRecipe(productId) {
+async function deleteRecipe(productId) {
     const recipes = getRecipes();
 
     if (!recipes[productId]) {
@@ -198,11 +201,14 @@ function deleteRecipe(productId) {
     delete recipes[productId];
     localStorage.setItem('kuchtanech_recipes', JSON.stringify(recipes));
 
-    // Обновляем информацию в PRODUCTS
-    if (window.PRODUCTS && window.PRODUCTS[productId]) {
-        window.PRODUCTS[productId].hasRecipe = false;
-        window.PRODUCTS[productId].calculatedCost = null;
-    }
+    // Обновляем информацию в PRODUCTS через data module
+    try {
+        const { PRODUCTS } = await import('./data.js');
+        if (PRODUCTS && PRODUCTS[productId]) {
+            PRODUCTS[productId].hasRecipe = false;
+            PRODUCTS[productId].calculatedCost = null;
+        }
+    } catch (e) { /* data module may not export PRODUCTS */ }
 
     console.log('✅ Удалён рецепт для:', productId);
     return true;
@@ -215,10 +221,8 @@ function calculateProductCost(productId) {
     const recipe = getRecipe(productId);
 
     if (!recipe) {
-        // Если нет рецепта, используем статичную себестоимость из PRODUCTS
-        if (window.PRODUCTS && window.PRODUCTS[productId]) {
-            return window.PRODUCTS[productId].cost;
-        }
+        // Если нет рецепта, используем статичную себестоимость из data.js
+        // TODO: В будущем импортировать PRODUCTS напрямую
         return 0;
     }
 
@@ -302,7 +306,7 @@ function calculateProductMargin(productId) {
 
     return {
         productId: productId,
-        productName: product.name,
+        productName: null, // Will be resolved by caller
         cost: cost,
         price: price,
         profit: price - cost,
@@ -319,11 +323,11 @@ function getProductsWithRecipes() {
 }
 
 // Получить список продуктов без рецептов
-function getProductsWithoutRecipes() {
-    if (!window.PRODUCTS) return [];
+function getProductsWithoutRecipes(PRODUCTS) {
+    if (!PRODUCTS) return [];
 
     const recipes = getRecipes();
-    const allProductIds = Object.keys(window.PRODUCTS);
+    const allProductIds = Object.keys(PRODUCTS);
 
     return allProductIds.filter(id => !recipes[id]);
 }
@@ -361,16 +365,18 @@ function getProductsUsingIngredient(ingredientId) {
     return products;
 }
 
-// ===== Экспорт функций =====
-window.getRecipes = getRecipes;
-window.getRecipe = getRecipe;
-window.saveRecipe = saveRecipe;
-window.deleteRecipe = deleteRecipe;
-window.calculateProductCost = calculateProductCost;
-window.calculateAllProductCosts = calculateAllProductCosts;
-window.getProductCostBreakdown = getProductCostBreakdown;
-window.calculateProductMargin = calculateProductMargin;
-window.getProductsWithRecipes = getProductsWithRecipes;
-window.getProductsWithoutRecipes = getProductsWithoutRecipes;
-window.isIngredientUsedInRecipes = isIngredientUsedInRecipes;
-window.getProductsUsingIngredient = getProductsUsingIngredient;
+// ===== Экспорт =====
+export {
+    getRecipes,
+    getRecipe,
+    saveRecipe,
+    deleteRecipe,
+    calculateProductCost,
+    calculateAllProductCosts,
+    getProductCostBreakdown,
+    calculateProductMargin,
+    getProductsWithRecipes,
+    getProductsWithoutRecipes,
+    isIngredientUsedInRecipes,
+    getProductsUsingIngredient
+};

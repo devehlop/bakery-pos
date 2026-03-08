@@ -1,13 +1,17 @@
-// ===== Общие функции =====
+import { renderSidebar } from './components/Sidebar.js';
+import { renderHeader, setCurrentDate } from './components/Header.js';
+import { cartStore } from './utils/CartStore.js';
+import { toast, showConfirm } from './utils/Toast.js';
+import { validateStockForSale, formatShortagesMessage } from './utils/StockValidator.js';
+import {
+    PRODUCTS, CATEGORY_NAMES,
+    getSales, addSale, getSalesByPeriod,
+    getTopProducts, getCategoryStats, getHourlyStats,
+    getDashboardKPI, getWeeklySalesData
+} from './data.js';
+import { processIngredientsForSale } from './stock-operations.js';
 
-// Установка текущей даты
-function setCurrentDate() {
-    const el = document.getElementById('currentDate');
-    if (el) {
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        el.textContent = new Date().toLocaleDateString('ru-RU', options);
-    }
-}
+// ===== Общие функции =====
 
 // Мобильное меню
 function initMobileMenu() {
@@ -24,7 +28,22 @@ function formatNumber(num) {
 }
 
 // ===== ДАШБОРД =====
-function initDashboard() {
+export function initDashboard() {
+    const sidebarContainer = document.getElementById('sidebar-container');
+    if (sidebarContainer) sidebarContainer.innerHTML = renderSidebar('dashboard');
+
+    const headerContainer = document.getElementById('header-container');
+    if (headerContainer) {
+        const extraActions = `
+            <div class="date-filter">
+                <button class="filter-btn active" data-period="today">Сегодня</button>
+                <button class="filter-btn" data-period="week">Неделя</button>
+                <button class="filter-btn" data-period="month">Месяц</button>
+            </div>
+        `;
+        headerContainer.innerHTML = renderHeader('Дашборд', extraActions);
+    }
+
     setCurrentDate();
     initMobileMenu();
     renderDashboardKPI();
@@ -208,9 +227,13 @@ function initFilters() {
 }
 
 // ===== СТРАНИЦА ДОБАВЛЕНИЯ ПРОДАЖИ =====
-let cart = [];
+export function initAddSale() {
+    const sidebarContainer = document.getElementById('sidebar-container');
+    if (sidebarContainer) sidebarContainer.innerHTML = renderSidebar('add-sale');
 
-function initAddSale() {
+    const headerContainer = document.getElementById('header-container');
+    if (headerContainer) headerContainer.innerHTML = renderHeader('Новая продажа');
+
     initMobileMenu();
 
     // Установка текущей даты/времени
@@ -227,7 +250,16 @@ function initAddSale() {
     // Очистка
     document.getElementById('clearFormBtn').addEventListener('click', clearCart);
 
+    // Подписка на изменения корзины
+    cartStore.subscribe(renderCart);
+
     renderCart();
+
+    // Храним предыдущие предупреждения о низком складе
+    const saved = cartStore.getItems();
+    if (saved.length > 0) {
+        toast.info(`Корзина восстановлена (${cartStore.getTotalItemsCount()} тов. на ${formatNumber(cartStore.getTotal(PRODUCTS))} ₽)`, 4000);
+    }
 }
 
 function addToCart() {
@@ -239,30 +271,23 @@ function addToCart() {
     const productId = select.value;
     const qty = parseInt(qtyInput.value) || 1;
 
-    const existing = cart.find(i => i.productId === productId);
-    if (existing) {
-        existing.qty += qty;
-    } else {
-        cart.push({ productId, qty });
-    }
+    cartStore.addItem(productId, qty);
 
     select.value = '';
     qtyInput.value = 1;
-    renderCart();
 }
 
 function removeFromCart(index) {
-    cart.splice(index, 1);
-    renderCart();
+    cartStore.removeItem(index);
 }
 
-function renderCart() {
+function renderCart(cartItems = cartStore.getItems()) {
     const container = document.getElementById('cartItems');
 
-    if (cart.length === 0) {
+    if (cartItems.length === 0) {
         container.innerHTML = '<div class="empty-cart">Добавьте товары в заказ</div>';
     } else {
-        container.innerHTML = cart.map((item, i) => {
+        container.innerHTML = cartItems.map((item, i) => {
             const product = PRODUCTS[item.productId];
             return `
                 <div class="cart-item">
@@ -276,38 +301,65 @@ function renderCart() {
     }
 
     // Обновление итогов
-    const totalItems = cart.reduce((sum, i) => sum + i.qty, 0);
-    const totalAmount = cart.reduce((sum, i) => sum + PRODUCTS[i.productId].price * i.qty, 0);
-
-    document.getElementById('totalItems').textContent = totalItems + ' шт';
-    document.getElementById('totalAmount').textContent = formatNumber(totalAmount) + ' ₽';
+    document.getElementById('totalItems').textContent = cartStore.getTotalItemsCount() + ' шт';
+    document.getElementById('totalAmount').textContent = formatNumber(cartStore.getTotal(PRODUCTS)) + ' ₽';
 }
 
 function clearCart() {
-    cart = [];
-    renderCart();
+    cartStore.clear();
 }
 
-function submitSale(e) {
+async function submitSale(e) {
     e.preventDefault();
 
-    if (cart.length === 0) {
-        alert('Добавьте товары в заказ');
+    const cartItems = cartStore.getItems();
+    if (cartItems.length === 0) {
+        toast.warning('Добавьте товары в заказ');
         return;
+    }
+
+    // ━━━ ВАЛИДАЦИЯ СКЛАДА ━━━
+    const stockCheck = validateStockForSale(cartItems);
+
+    // Предупреждения о низком остатке (но не блокируем)
+    if (stockCheck.warnings.length > 0) {
+        stockCheck.warnings.forEach(w => toast.warning(w, 5000));
+    }
+
+    // Нехватка (блокируем и спрашиваем подтверждение)
+    if (!stockCheck.valid) {
+        const msg = formatShortagesMessage(stockCheck.shortages);
+        const proceed = await showConfirm(
+            msg + '\n\nВсё равно провести продажу?',
+            { title: 'Недостаточно ингредиентов', confirmText: 'Всё равно провести', cancelText: 'Отменить', danger: true }
+        );
+        if (!proceed) return;
     }
 
     const sale = {
         id: 'CHK-' + Date.now().toString(36).toUpperCase(),
         date: document.getElementById('saleDate').value,
         time: document.getElementById('saleTime').value,
-        items: [...cart],
+        items: [...cartItems],
         paymentMethod: document.querySelector('input[name="paymentMethod"]:checked').value,
-        total: cart.reduce((sum, i) => sum + PRODUCTS[i.productId].price * i.qty, 0)
+        total: cartStore.getTotal(PRODUCTS)
     };
 
     addSale(sale);
+    cartStore.clear();
+
+    // ━━━ АВТОМАТИЧЕСКОЕ СПИСАНИЕ ИНГРЕДИЕНТОВ ━━━
+    try {
+        const deducted = processIngredientsForSale(sale);
+        if (deducted.length > 0) {
+            toast.info(`Списано ${deducted.length} поз. ингредиентов со склада`, 3000);
+        }
+    } catch (err) {
+        toast.warning('Не удалось списать часть ингредиентов: ' + err.message);
+    }
 
     // Показать успех
+    toast.success(`Чек ${sale.id} на ${formatNumber(sale.total)} ₽ успешно записан!`, 5000);
     document.getElementById('successDetails').textContent =
         `Чек ${sale.id} на сумму ${formatNumber(sale.total)} ₽`;
     document.getElementById('successModal').classList.remove('hidden');
@@ -324,7 +376,16 @@ function newSale() {
 }
 
 // ===== СТРАНИЦА ПРОДАЖ =====
-function initSalesPage() {
+export function initSalesPage() {
+    const sidebarContainer = document.getElementById('sidebar-container');
+    if (sidebarContainer) sidebarContainer.innerHTML = renderSidebar('sales');
+
+    const headerContainer = document.getElementById('header-container');
+    if (headerContainer) {
+        const extraActions = `<a href="/add-sale.html" class="btn btn-primary">➕ Новая продажа</a>`;
+        headerContainer.innerHTML = renderHeader('Продажи', extraActions);
+    }
+
     setCurrentDate();
     initMobileMenu();
     renderSalesTable();
@@ -365,7 +426,16 @@ function initSalesFilters() {
 }
 
 // ===== СТРАНИЦА ТОВАРОВ =====
-function initProductsPage() {
+export function initProductsPage() {
+    const sidebarContainer = document.getElementById('sidebar-container');
+    if (sidebarContainer) sidebarContainer.innerHTML = renderSidebar('products');
+
+    const headerContainer = document.getElementById('header-container');
+    if (headerContainer) {
+        const extraActions = `<button class="btn btn-primary" onclick="alert('Функция в разработке')">➕ Добавить товар</button>`;
+        headerContainer.innerHTML = renderHeader('Ассортимент', extraActions);
+    }
+
     initMobileMenu();
     renderProductsTable();
     initProductFilters();
@@ -433,7 +503,13 @@ function initProductFilters() {
 }
 
 // ===== СТРАНИЦА ОТЧЁТОВ =====
-function initReportsPage() {
+export function initReportsPage() {
+    const sidebarContainer = document.getElementById('sidebar-container');
+    if (sidebarContainer) sidebarContainer.innerHTML = renderSidebar('reports');
+
+    const headerContainer = document.getElementById('header-container');
+    if (headerContainer) headerContainer.innerHTML = renderHeader('Отчёты и Аналитика');
+
     initMobileMenu();
     initReportCards();
     setDefaultDates();

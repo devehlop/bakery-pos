@@ -1,18 +1,33 @@
+import { renderSidebar } from './components/Sidebar.js';
+import { renderHeader } from './components/Header.js';
+import {
+    INGREDIENT_CATEGORIES,
+    getIngredients, getIngredient, addIngredient, updateIngredient, deleteIngredient,
+    getLowStockIngredients, getTotalStockValue, getStockStatus
+} from './ingredients.js';
+import { isIngredientUsedInRecipes, getProductsUsingIngredient } from './recipes.js';
+import { getStockOperations } from './stock-operations.js';
+import { toast, showConfirm } from './utils/Toast.js';
+
 // ===== Страница управления ингредиентами - Кучтэнэч =====
 
 // Глобальные переменные
 let currentCategory = 'all';
 let searchQuery = '';
 
-// ===== Инициализация =====
-document.addEventListener('DOMContentLoaded', function () {
-    initIngredientsPage();
-    setupMobileMenu();
-});
+export function initIngredientsPage() {
+    const sidebarContainer = document.getElementById('sidebar-container');
+    if (sidebarContainer) sidebarContainer.innerHTML = renderSidebar('ingredients');
 
-function initIngredientsPage() {
+    const headerContainer = document.getElementById('header-container');
+    if (headerContainer) {
+        const extraActions = `<button class="btn btn-primary" onclick="showAddIngredientModal()">➕ Добавить ингредиент</button>`;
+        headerContainer.innerHTML = renderHeader('📦 Ингредиенты', extraActions);
+    }
+
     updateKPIs();
     renderIngredientsTable();
+    setupMobileMenu();
 }
 
 // ===== Обновление KPI =====
@@ -255,8 +270,7 @@ function formatNumber(value) {
 }
 
 function showNotification(message, type = 'info') {
-    // Простое уведомление через alert (можно улучшить)
-    alert(message);
+    toast[type]?.(message) ?? toast.info(message);
 }
 
 // ===== Мобильное меню =====

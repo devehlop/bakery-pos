@@ -9,78 +9,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="./src/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
     <div class="app-container">
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="logo">
-                <div class="logo-icon">🥐</div>
-                <div class="logo-text">
-                    <span class="logo-title">Кучтэнэч</span>
-                    <span class="logo-subtitle">Аналитика</span>
-                </div>
-            </div>
-
-            <nav class="nav-menu">
-                <a href="pos.html" class="nav-item"
-                    style="background: linear-gradient(135deg, #e94560, #ff6b6b); color: white; border: none;">
-                    <span class="nav-icon">🖥️</span>
-                    <span>КАССА</span>
-                </a>
-                <a href="index.html" class="nav-item active">
-                    <span class="nav-icon">📊</span>
-                    <span>Дашборд</span>
-                </a>
-                <a href="sales.html" class="nav-item">
-                    <span class="nav-icon">💰</span>
-                    <span>Продажи</span>
-                </a>
-                <a href="add-sale.html" class="nav-item">
-                    <span class="nav-icon">➕</span>
-                    <span>Новая продажа</span>
-                </a>
-                <a href="products.html" class="nav-item">
-                    <span class="nav-icon">🥧</span>
-                    <span>Ассортимент</span>
-                </a>
-                <a href="reports.html" class="nav-item">
-                    <span class="nav-icon">📄</span>
-                    <span>Отчёты</span>
-                </a>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">АК</div>
-                    <div class="user-details">
-                        <span class="user-name">Айгуль Каримова</span>
-                        <span class="user-role">Владелец</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
-
+        <!-- Sidebar Container -->
+        <div id="sidebar-container"></div>
         <!-- Main Content -->
         <main class="main-content">
             <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
 
-            <header class="header">
-                <div class="header-left">
-                    <h1 class="page-title">Дашборд</h1>
-                    <span class="page-date" id="currentDate"></span>
-                </div>
-                <div class="header-right">
-                    <div class="date-filter">
-                        <button class="filter-btn active" data-period="today">Сегодня</button>
-                        <button class="filter-btn" data-period="week">Неделя</button>
-                        <button class="filter-btn" data-period="month">Месяц</button>
-                    </div>
-                </div>
-            </header>
+            <!-- Header Container -->
+            <div id="header-container"></div>
 
             <div class="dashboard-content">
                 <!-- KPI Cards -->
@@ -197,10 +139,9 @@
         </main>
     </div>
 
-    <script src="data.js"></script>
-    <script src="app.js"></script>
-    <script>
-        initDashboard();
+    <script type="module">
+        import { initDashboard } from './src/app.js';
+        document.addEventListener('DOMContentLoaded', () => initDashboard());
     </script>
 </body>
 

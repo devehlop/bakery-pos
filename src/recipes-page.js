@@ -1,3 +1,14 @@
+import { renderSidebar } from './components/Sidebar.js';
+import { renderHeader } from './components/Header.js';
+import { getIngredients, getIngredient } from './ingredients.js';
+import {
+    getRecipe, saveRecipe, deleteRecipe,
+    calculateProductCost, calculateProductMargin,
+    getProductsWithRecipes, getProductsWithoutRecipes
+} from './recipes.js';
+import { PRODUCTS, CATEGORY_NAMES } from './data.js';
+import { toast, showConfirm } from './utils/Toast.js';
+
 // ===== Страница управления рецептами - Кучтэнэч =====
 
 // Глобальные переменные
@@ -5,13 +16,27 @@ let currentProductId = null;
 let currentRecipe = null;
 let searchQuery = '';
 
-// ===== Инициализация =====
-document.addEventListener('DOMContentLoaded', function () {
-    initRecipesPage();
-    setupMobileMenu();
-});
+export function initRecipesPage() {
+    const sidebarContainer = document.getElementById('sidebar-container');
+    if (sidebarContainer) sidebarContainer.innerHTML = renderSidebar('recipes');
 
-function initRecipesPage() {
+    const headerContainer = document.getElementById('header-container');
+    if (headerContainer) {
+        const extraActions = `
+            <div class="recipe-stats">
+                <span class="stat-item">
+                    <span class="stat-label">С рецептами:</span>
+                    <span class="stat-value" id="withRecipesCount">0</span>
+                </span>
+                <span class="stat-item">
+                    <span class="stat-label">Без рецептов:</span>
+                    <span class="stat-value" id="withoutRecipesCount">0</span>
+                </span>
+            </div>
+        `;
+        headerContainer.innerHTML = renderHeader('📋 Рецепты', extraActions);
+    }
+
     updateStats();
     renderProductsList();
     populateIngredientSelect();
@@ -231,14 +256,14 @@ function handleAddIngredientToRecipe(event) {
     const unit = document.getElementById('recipeIngredientUnit').value;
 
     if (!ingredientId || !quantity) {
-        alert('Заполните все обязательные поля');
+        toast.warning('Заполните все обязательные поля');
         return;
     }
 
     // Проверить, не добавлен ли уже этот ингредиент
     const exists = currentRecipe.ingredients.some(ing => ing.ingredientId === ingredientId);
     if (exists) {
-        alert('Этот ингредиент уже добавлен в рецепт');
+        toast.warning('Этот ингредиент уже добавлен в рецепт');
         return;
     }
 
@@ -254,10 +279,11 @@ function handleAddIngredientToRecipe(event) {
     updateCostCalculation();
 }
 
-function removeIngredientFromRecipe(index) {
+async function removeIngredientFromRecipe(index) {
     if (!currentRecipe) return;
 
-    if (confirm('Удалить этот ингредиент из рецепта?')) {
+    const ok = await showConfirm('Удалить этот ингредиент из рецепта?', { confirmText: 'Удалить', danger: true });
+    if (ok) {
         currentRecipe.ingredients.splice(index, 1);
         renderRecipeIngredients();
         updateCostCalculation();
@@ -269,7 +295,7 @@ function saveCurrentRecipe() {
     if (!currentRecipe || !currentProductId) return;
 
     if (currentRecipe.ingredients.length === 0) {
-        alert('Добавьте хотя бы один ингредиент в рецепт');
+        toast.warning('Добавьте хотя бы один ингредиент в рецепт');
         return;
     }
 
@@ -277,30 +303,31 @@ function saveCurrentRecipe() {
         saveRecipe(currentRecipe);
         updateStats();
         renderProductsList();
-        alert('✅ Рецепт успешно сохранён');
+        toast.success('Рецепт успешно сохранён');
     } catch (error) {
-        alert('❌ Ошибка сохранения: ' + error.message);
+        toast.error('Ошибка сохранения: ' + error.message);
     }
 }
 
-function deleteRecipeConfirm() {
+async function deleteRecipeConfirm() {
     if (!currentProductId) return;
 
     const recipe = getRecipe(currentProductId);
     if (!recipe) {
-        alert('Рецепт не существует');
+        toast.warning('Рецепт не существует');
         return;
     }
 
-    if (confirm('Удалить рецепт для этого продукта?')) {
+    const ok = await showConfirm('Удалить рецепт для этого продукта?', { confirmText: 'Удалить', danger: true });
+    if (ok) {
         try {
             deleteRecipe(currentProductId);
             closeRecipeEditor();
             updateStats();
             renderProductsList();
-            alert('✅ Рецепт удалён');
+            toast.success('Рецепт удалён');
         } catch (error) {
-            alert('❌ Ошибка удаления: ' + error.message);
+            toast.error('Ошибка удаления: ' + error.message);
         }
     }
 }

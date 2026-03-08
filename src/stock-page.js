@@ -1,3 +1,15 @@
+import { renderSidebar } from './components/Sidebar.js';
+import { renderHeader } from './components/Header.js';
+import {
+    getIngredients, getIngredient, getLowStockIngredients,
+    getTotalStockValue, getStockStatus, INGREDIENT_CATEGORIES, updateIngredientStock
+} from './ingredients.js';
+import {
+    getStockOperations, createStockOperation, OPERATION_TYPES,
+    getStockOperationsByPeriod, getStockForecast, getWasteReport, getTopUsedIngredients
+} from './stock-operations.js';
+import { toast } from './utils/Toast.js';
+
 // ===== Страница управления складом - Кучтэнэч =====
 
 // Глобальные переменные
@@ -7,12 +19,16 @@ let operationTypeFilter = 'all';
 let operationPeriodFilter = 'month';
 
 // ===== Инициализация =====
-document.addEventListener('DOMContentLoaded', function () {
-    initStockPage();
-    setupMobileMenu();
-});
+export function initStockPage() {
+    const sidebarContainer = document.getElementById('sidebar-container');
+    if (sidebarContainer) sidebarContainer.innerHTML = renderSidebar('stock');
 
-function initStockPage() {
+    const headerContainer = document.getElementById('header-container');
+    if (headerContainer) {
+        const extraActions = `<button class="btn btn-primary" onclick="showNewOperationModal()">➕ Новая операция</button>`;
+        headerContainer.innerHTML = renderHeader('🏪 Склад', extraActions);
+    }
+
     populateOperationIngredients();
     renderBalancesTab();
 }
@@ -424,7 +440,7 @@ function handleNewOperation(event) {
     const notes = document.getElementById('operationNotes').value;
 
     if (!type || !ingredientId || !quantity) {
-        alert('Заполните все обязательные поля');
+        toast.warning('Заполните все обязательные поля');
         return;
     }
 
@@ -444,9 +460,9 @@ function handleNewOperation(event) {
         closeNewOperationModal();
         renderBalancesTab();
         renderOperationsTab();
-        alert('✅ Операция успешно выполнена');
+        toast.success('Операция успешно выполнена');
     } catch (error) {
-        alert('❌ Ошибка: ' + error.message);
+        toast.error('Ошибка: ' + error.message);
     }
 }
 

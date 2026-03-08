@@ -1,4 +1,6 @@
 // ===== Модуль складских операций - Кучтэнэч =====
+import { getIngredient, updateIngredientStock } from './ingredients.js';
+import { getRecipe } from './recipes.js';
 
 // Типы операций
 const OPERATION_TYPES = {
@@ -347,16 +349,18 @@ function getTopUsedIngredients(period = 'month', limit = 5) {
         .slice(0, limit);
 }
 
-// ===== Экспорт функций =====
-window.OPERATION_TYPES = OPERATION_TYPES;
-window.getStockOperations = getStockOperations;
-window.createStockOperation = createStockOperation;
-window.processIngredientsForSale = processIngredientsForSale;
-window.getStockOperationsByPeriod = getStockOperationsByPeriod;
-window.getStockOperationsByIngredient = getStockOperationsByIngredient;
-window.getStockOperationsByType = getStockOperationsByType;
-window.getStockOperationsBySale = getStockOperationsBySale;
-window.getStockForecast = getStockForecast;
-window.getWasteReport = getWasteReport;
-window.getOperationsStats = getOperationsStats;
-window.getTopUsedIngredients = getTopUsedIngredients;
+// ===== Экспорт =====
+export {
+    OPERATION_TYPES,
+    getStockOperations,
+    createStockOperation,
+    processIngredientsForSale,
+    getStockOperationsByPeriod,
+    getStockOperationsByIngredient,
+    getStockOperationsByType,
+    getStockOperationsBySale,
+    getStockForecast,
+    getWasteReport,
+    getOperationsStats,
+    getTopUsedIngredients
+};

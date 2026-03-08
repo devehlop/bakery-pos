@@ -357,17 +357,19 @@ function getStockStatus(ingredient) {
     }
 }
 
-// ===== Экспорт функций =====
-window.INGREDIENT_CATEGORIES = INGREDIENT_CATEGORIES;
-window.getIngredients = getIngredients;
-window.getIngredient = getIngredient;
-window.addIngredient = addIngredient;
-window.updateIngredient = updateIngredient;
-window.deleteIngredient = deleteIngredient;
-window.getIngredientsByCategory = getIngredientsByCategory;
-window.searchIngredients = searchIngredients;
-window.getLowStockIngredients = getLowStockIngredients;
-window.getCriticalStockIngredients = getCriticalStockIngredients;
-window.getTotalStockValue = getTotalStockValue;
-window.updateIngredientStock = updateIngredientStock;
-window.getStockStatus = getStockStatus;
+// ===== Экспорт =====
+export {
+    INGREDIENT_CATEGORIES,
+    getIngredients,
+    getIngredient,
+    addIngredient,
+    updateIngredient,
+    deleteIngredient,
+    getIngredientsByCategory,
+    searchIngredients,
+    getLowStockIngredients,
+    getCriticalStockIngredients,
+    getTotalStockValue,
+    updateIngredientStock,
+    getStockStatus
+};
